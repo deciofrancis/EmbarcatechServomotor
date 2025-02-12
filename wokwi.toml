@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/EmbarcatechServomotor.uf2'
+elf = 'build/EmbarcatechServomotor.elf'
