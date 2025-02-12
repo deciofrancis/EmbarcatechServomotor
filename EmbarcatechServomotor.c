@@ -24,6 +24,14 @@ void init_pwm(uint gpio)
     pwm_set_enabled(slice, true);
 }
 
+// Função para definir o pulso do servo em microssegundos
+void set_servo_pulse(uint gpio, uint16_t pulse_width)
+{
+    uint slice = pwm_gpio_to_slice_num(gpio);
+    uint16_t level = (pulse_width * PWM_TOP) / 20000;
+    pwm_set_chan_level(slice, pwm_gpio_to_channel(gpio), level);
+}
+
 int main()
 {
     stdio_init_all();
@@ -31,8 +39,28 @@ int main()
 
     sleep_ms(500); // Pequeno atraso antes de iniciar
 
+    // Posicionamento inicial do servo
+    set_servo_pulse(SERVO_PIN, ANGLE_180);
+    sleep_ms(5000);
+
+    set_servo_pulse(SERVO_PIN, ANGLE_90);
+    sleep_ms(5000);
+
+    set_servo_pulse(SERVO_PIN, ANGLE_0);
+    sleep_ms(5000);
+
     // Loop para varredura gradual entre 0° e 180°
     while (true)
     {
+        for (uint16_t pulse = ANGLE_0; pulse <= ANGLE_180; pulse += STEP_SIZE)
+        {
+            set_servo_pulse(SERVO_PIN, pulse);
+            sleep_ms(STEP_DELAY_MS);
+        }
+        for (uint16_t pulse = ANGLE_180; pulse >= ANGLE_0; pulse -= STEP_SIZE)
+        {
+            set_servo_pulse(SERVO_PIN, pulse);
+            sleep_ms(STEP_DELAY_MS);
+        }
     }
 }
